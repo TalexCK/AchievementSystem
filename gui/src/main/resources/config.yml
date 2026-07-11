@@ -1,0 +1,5 @@
+api-url: http://127.0.0.1:25567
+api-url-environment: ACHIEVEMENT_API_URL
+token: replace-with-a-long-random-token
+token-environment: ACHIEVEMENT_API_TOKEN
+timeout: 3000

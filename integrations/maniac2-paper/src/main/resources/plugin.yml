@@ -1,0 +1,9 @@
+name: ManiacAchievementHook
+version: 0.1.0
+main: dev.shtech.achievement.integration.maniac2.ManiacAchievementHookPlugin
+api-version: '1.21'
+authors:
+  - ShTechCraft
+description: Maniac 2 all-keys achievement integration
+depend:
+  - AchievementHook

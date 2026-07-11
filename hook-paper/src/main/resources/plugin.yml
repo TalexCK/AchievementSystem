@@ -1,0 +1,14 @@
+name: AchievementHook
+version: 0.1.0-SNAPSHOT
+main: dev.shtech.achievement.hook.paper.AchievementHookPaperPlugin
+api-version: "1.20"
+description: Achievement progress hook for Paper servers
+commands:
+  achievementhook:
+    description: Manage player achievement progress
+    usage: /achievementhook <add|set|max> <player> <category> <amount> [eventId]
+    permission: achievementhook.admin
+permissions:
+  achievementhook.admin:
+    description: Allows managing player achievement progress
+    default: op

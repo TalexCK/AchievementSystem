@@ -1,0 +1,17 @@
+api:
+  host: "127.0.0.1"
+  port: 25567
+  token: "replace-with-a-long-random-token"
+  maximum-body-bytes: 65536
+database:
+  url: "jdbc:postgresql://127.0.0.1:5432/achievements"
+  user: "achievements"
+  password: "replace-with-a-database-password"
+  pool-size: 8
+badges:
+  maximum-selected: 3
+  luckperms-suffix-priority: 180
+rewards:
+  poll-seconds: 5
+  batch-size: 50
+

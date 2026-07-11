@@ -1,0 +1,20 @@
+name: AchievementGui
+version: 0.1.0
+main: dev.shtech.achievement.gui.AchievementGuiPlugin
+api-version: '1.21'
+authors:
+  - ShTechCraft
+description: Lobby achievement browser and badge selector
+commands:
+  achievements:
+    description: 打开成就界面
+    usage: /achievements
+    aliases:
+      - achievement
+      - ach
+    permission: achievement.gui.use
+    permission-message: '§cYou do not have permission.'
+permissions:
+  achievement.gui.use:
+    description: 允许打开成就界面
+    default: true

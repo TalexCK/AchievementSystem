@@ -1,0 +1,6 @@
+enabled: true
+api-url: http://127.0.0.1:25567
+api-token: replace-with-a-long-random-token
+source: paper_server
+timeout-seconds: 5
+retry-attempts: 3

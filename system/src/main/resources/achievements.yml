@@ -1,0 +1,156 @@
+categories:
+  welcome:
+    enabled: true
+    order: 1
+    hidden: false
+    badge-enabled: false
+    display-name: "Welcome to SHTechCraft Minigames."
+    description:
+      - "首次加入 SHTechCraft Minigames"
+    material: "EMERALD"
+    symbol: "✓"
+    tiers:
+      - name: "Welcome to SHTechCraft Minigames."
+        threshold: 1
+        color: "#55FF55"
+  puzzle_maps:
+    enabled: false
+    order: 10
+    hidden: false
+    badge-enabled: true
+    display-name: "谜境探索"
+    description:
+      - "完成独立解谜地图，逐步提升徽章等级"
+      - "徽章图案为 ⌘，类别将在地图成就接入后启用"
+    material: "AMETHYST_SHARD"
+    symbol: "⌘"
+    tiers:
+      - name: "初入谜境"
+        threshold: 1
+        color: "#9E9E9E"
+        rewards:
+          - type: "permission"
+            value: "achievement.puzzle_maps.tier.1"
+            description: "解锁谜境探索 I 徽章"
+      - name: "寻迹者"
+        threshold: 3
+        color: "#E0E0E0"
+        rewards:
+          - type: "permission"
+            value: "achievement.puzzle_maps.tier.2"
+            description: "解锁谜境探索 II 徽章"
+      - name: "破局者"
+        threshold: 5
+        color: "#FFEB3B"
+        rewards:
+          - type: "permission"
+            value: "achievement.puzzle_maps.tier.3"
+            description: "解锁谜境探索 III 徽章"
+      - name: "机关师"
+        threshold: 7
+        color: "#FFB300"
+        rewards:
+          - type: "permission"
+            value: "achievement.puzzle_maps.tier.4"
+            description: "解锁谜境探索 IV 徽章"
+      - name: "秘径行者"
+        threshold: 10
+        color: "#66BB6A"
+        rewards:
+          - type: "permission"
+            value: "achievement.puzzle_maps.tier.5"
+            description: "解锁谜境探索 V 徽章"
+      - name: "谜题学者"
+        threshold: 15
+        color: "#26A69A"
+        rewards:
+          - type: "permission"
+            value: "achievement.puzzle_maps.tier.6"
+            description: "解锁谜境探索 VI 徽章"
+      - name: "晶核解码者"
+        threshold: 20
+        color: "#29B6F6"
+        rewards:
+          - type: "permission"
+            value: "achievement.puzzle_maps.tier.7"
+            description: "解锁谜境探索 VII 徽章"
+      - name: "迷宫领航者"
+        threshold: 30
+        color: "#5C6BC0"
+        rewards:
+          - type: "permission"
+            value: "achievement.puzzle_maps.tier.8"
+            description: "解锁谜境探索 VIII 徽章"
+      - name: "谜境宗师"
+        threshold: 50
+        color: "#EC407A"
+        rewards:
+          - type: "permission"
+            value: "achievement.puzzle_maps.tier.9"
+            description: "解锁谜境探索 IX 徽章"
+      - name: "终极解谜者"
+        threshold: 100
+        color: "#8E24AA"
+        rewards:
+          - type: "permission"
+            value: "achievement.puzzle_maps.tier.10"
+            description: "解锁谜境探索 X 徽章"
+  bingo_hard_3_monthly_first:
+    enabled: true
+    order: 20
+    hidden: false
+    badge-enabled: true
+    display-name: "Bingo King"
+    description:
+      - "在困难三线月榜中获得第一名"
+      - "并列第一会同时计入，跨月累计升级"
+    material: "CLOCK"
+    symbol: "❖"
+    tiers:
+      - name: "I"
+        threshold: 1
+        color: "#9E9E9E"
+      - name: "II"
+        threshold: 2
+        color: "#E0E0E0"
+      - name: "III"
+        threshold: 3
+        color: "#FFEB3B"
+      - name: "IV"
+        threshold: 4
+        color: "#FFB300"
+      - name: "V"
+        threshold: 5
+        color: "#66BB6A"
+      - name: "VI"
+        threshold: 6
+        color: "#26A69A"
+      - name: "VII"
+        threshold: 7
+        color: "#29B6F6"
+      - name: "VIII"
+        threshold: 8
+        color: "#5C6BC0"
+      - name: "IX"
+        threshold: 9
+        color: "#EC407A"
+      - name: "X"
+        threshold: 10
+        color: "#8E24AA"
+  maniac_2_everything:
+    enabled: true
+    order: 30
+    hidden: true
+    badge-enabled: true
+    display-name: "Who's the Maniac Now?"
+    description:
+      - "在同一局逃离疯子 2 中曾拥有全部 16 把钥匙"
+      - "包含两把地下室钥匙"
+      - "曾拥有 6 桶汽油、绝缘胶带、断线钳和螺丝刀"
+      - "曾拥有急救箱和至少 1 片药"
+    material: "TRIPWIRE_HOOK"
+    symbol: "✣"
+    tiers:
+      - name: "Who's the Maniac Now?"
+        threshold: 1
+        color: "#29B6F6"
