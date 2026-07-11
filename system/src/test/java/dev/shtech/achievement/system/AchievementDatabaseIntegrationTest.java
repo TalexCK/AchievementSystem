@@ -310,10 +310,7 @@ class AchievementDatabaseIntegrationTest {
         AchievementManager manager = new AchievementManager(
           database,
           new AchievementCatalog(List.of(category)),
-          null,
           3,
-          ignored -> {
-          },
           () -> {
           }
         );
@@ -414,7 +411,6 @@ class AchievementDatabaseIntegrationTest {
       System.getenv("ACHIEVEMENT_TEST_DATABASE_PASSWORD"),
       2,
       3,
-      180,
       Duration.ofSeconds(5),
       50
     );

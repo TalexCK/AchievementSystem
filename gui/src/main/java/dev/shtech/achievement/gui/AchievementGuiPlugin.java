@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class AchievementGuiPlugin extends JavaPlugin {
   private AchievementGuiController controller;
   private AchievementHotbarEntry hotbarEntry;
+  private TabBadgeSynchronizer badgeSynchronizer;
 
   @Override
   public void onEnable() {
@@ -19,8 +20,10 @@ public final class AchievementGuiPlugin extends JavaPlugin {
         settings.token(),
         settings.timeout()
       );
-      controller = new AchievementGuiController(this, client);
+      badgeSynchronizer = new TabBadgeSynchronizer(this, client);
+      controller = new AchievementGuiController(this, client, badgeSynchronizer);
       getServer().getPluginManager().registerEvents(controller, this);
+      getServer().getPluginManager().registerEvents(badgeSynchronizer, this);
       hotbarEntry = new AchievementHotbarEntry(this, controller::open);
       getServer().getPluginManager().registerEvents(hotbarEntry, this);
       PluginCommand command = Objects.requireNonNull(
@@ -28,6 +31,7 @@ public final class AchievementGuiPlugin extends JavaPlugin {
         "Achievement command is not registered."
       );
       command.setExecutor(new AchievementCommand(controller));
+      badgeSynchronizer.enable();
       hotbarEntry.enable();
       getLogger().info("Achievement GUI enabled.");
     } catch (RuntimeException error) {
@@ -38,6 +42,9 @@ public final class AchievementGuiPlugin extends JavaPlugin {
 
   @Override
   public void onDisable() {
+    if (badgeSynchronizer != null) {
+      badgeSynchronizer.disable();
+    }
     if (hotbarEntry != null) {
       hotbarEntry.disable();
     }

@@ -3,7 +3,6 @@ package dev.shtech.achievement.system;
 import com.google.inject.Inject;
 import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.event.Subscribe;
-import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
@@ -68,10 +67,6 @@ public final class AchievementSystemPlugin {
       AchievementCatalog catalog = AchievementCatalog.load(dataDirectory);
       database = new AchievementDatabase(config);
       LuckPerms luckPerms = LuckPermsProvider.get();
-      LuckPermsBadgeService badgeService = new LuckPermsBadgeService(
-        luckPerms,
-        config.suffixPriority()
-      );
       rewardDispatcher = new RewardDispatcher(
         database,
         proxyServer,
@@ -83,9 +78,7 @@ public final class AchievementSystemPlugin {
       manager = new AchievementManager(
         database,
         catalog,
-        badgeService,
         config.maximumSelectedBadges(),
-        logger::error,
         rewardDispatcher::wake
       );
       httpServer = new AchievementHttpServer(
@@ -121,18 +114,6 @@ public final class AchievementSystemPlugin {
     } catch (Exception error) {
       logger.error("AchievementSystem failed to initialize: {}", rootMessage(error));
       closeResources();
-    }
-  }
-
-  @Subscribe
-  public void onPostLogin(PostLoginEvent event) {
-    AchievementManager currentManager = manager;
-    ExecutorService executor = ioExecutor;
-    if (currentManager != null && executor != null && !executor.isShutdown()) {
-      executor.execute(() -> currentManager.refreshSuffix(
-        event.getPlayer().getUniqueId(),
-        event.getPlayer().getUsername()
-      ));
     }
   }
 
@@ -295,9 +276,6 @@ public final class AchievementSystemPlugin {
       try {
         AchievementCatalog catalog = AchievementCatalog.load(dataDirectory);
         currentManager.reload(catalog);
-        for (var player : proxyServer.getAllPlayers()) {
-          currentManager.refreshSuffix(player.getUniqueId(), player.getUsername());
-        }
         source.sendMessage(Component.text(
           "Reloaded " + catalog.categories().size() + " achievement categories.",
           NamedTextColor.GREEN

@@ -10,8 +10,6 @@ database:
   pool-size: 8
 badges:
   maximum-selected: 3
-  luckperms-suffix-priority: 180
 rewards:
   poll-seconds: 5
   batch-size: 50
-

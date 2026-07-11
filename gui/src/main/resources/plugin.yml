@@ -5,6 +5,8 @@ api-version: '1.21'
 authors:
   - ShTechCraft
 description: Lobby achievement browser and badge selector
+depend:
+  - TAB
 commands:
   achievements:
     description: 打开成就界面

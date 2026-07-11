@@ -22,7 +22,6 @@ public record SystemConfig(
   String databasePassword,
   int databasePoolSize,
   int maximumSelectedBadges,
-  int suffixPriority,
   Duration rewardPollInterval,
   int rewardBatchSize
 ) {
@@ -57,7 +56,6 @@ public record SystemConfig(
       password,
       intValue(database, "pool-size"),
       intValue(badges, "maximum-selected"),
-      intValue(badges, "luckperms-suffix-priority"),
       Duration.ofSeconds(intValue(rewards, "poll-seconds")),
       intValue(rewards, "batch-size")
     );
@@ -88,9 +86,6 @@ public record SystemConfig(
     }
     if (maximumSelectedBadges < 1 || maximumSelectedBadges > 3) {
       throw new IllegalArgumentException("Maximum selected badges must be between 1 and 3.");
-    }
-    if (suffixPriority < 1 || suffixPriority > 10_000) {
-      throw new IllegalArgumentException("LuckPerms suffix priority is invalid.");
     }
     if (rewardPollInterval.isZero() || rewardPollInterval.isNegative()) {
       throw new IllegalArgumentException("Reward poll interval must be positive.");

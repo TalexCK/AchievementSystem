@@ -11,7 +11,9 @@ AchievementHook.jar ─┐
 AchievementGui.jar ──┘                              │
 ManiacAchievementHook.jar ─> AchievementHook.jar    │
                                                    ├─ Reward Outbox
-                                                   └─ LuckPerms suffix ─> TAB
+                                                   └─ PostgreSQL badge selection
+                                                               │
+                                                               └─ Lobby TAB API
 ```
 
 - `AchievementSystem.jar`：Velocity 3.3+，Java 21。
@@ -77,7 +79,6 @@ database:
   pool-size: 8
 badges:
   maximum-selected: 3
-  luckperms-suffix-priority: 180
 rewards:
   poll-seconds: 5
   batch-size: 50
@@ -136,7 +137,7 @@ categories:
 
 `hidden: true` 的类别在首次完成前只返回“隐藏成就”和占位内容，完成后才向 GUI 揭示真实
 标题、描述、图案和等级。`badge-enabled: false` 的类别会显示在总览中，但不能被选择为
-LuckPerms suffix。
+TAB 展示后缀。
 
 GUI 总览显示每个类别至少完成一级的全服人数，详情页显示每一级的独立获取人数。隐藏成就
 在完成前同样公开人数和每级首位获取者，但不会公开真实标题、描述或奖励；首位获取者从
@@ -233,16 +234,19 @@ GUI 包含：
 阻止。若第五格已有真实物品，会先将它移动到空闲背包格；背包完全满时保留原物品并提示，
 不会覆盖或吞掉物品。插件关闭和玩家离开时只移除带 PDC 标识的入口。
 
-## LuckPerms 与 TAB
+## PostgreSQL 与 TAB
 
-System 使用一个保留优先级的全局 LuckPerms suffix，把最多三个徽章聚合为一条：
+System 将最多三个展示徽章及其顺序持久化到 PostgreSQL 的
+`achievement_badge_selection`。Lobby 玩家进入、TAB 重载、打开 GUI、刷新 GUI 或修改徽章
+选择时，AchievementGui 都会从 System API 重新读取数据库快照，并通过 TAB API 同时更新
+TAB 列表和头顶名牌后缀：
 
 ```text
  &#9E9E9E◆&r &#29B6F6✦&r &#8E24AA❖&r
 ```
 
-这样不会受 LuckPerms `highest` suffix stacking 限制。每个徽章和整段颜色都会重置，避免
-颜色污染后续文本。
+每个图标使用当前成就等级的 `#RRGGBB` 颜色，图标后立即重置颜色，避免污染后续文本。
+LuckPerms 只继续承担权限和群组奖励，不再存储或生成成就展示后缀。
 
 Lobby TAB 建议：
 
@@ -254,11 +258,11 @@ scoreboard-teams:
 ```yaml
 _DEFAULT_:
   customtabname: "%player%&r"
-  tabsuffix: "%luckperms-suffix%&r"
-  tagsuffix: "%luckperms-suffix%&r"
+  tabsuffix: ""
+  tagsuffix: ""
 ```
 
-`tabsuffix` 控制 TAB 列表，开启 `scoreboard-teams` 后 `tagsuffix` 同时控制头顶名牌。
+`tabsuffix` 和 `tagsuffix` 保持为空，AchievementGui 使用 TAB API 设置玩家级自定义值。
 
 ## AchievementHook
 

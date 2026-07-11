@@ -16,34 +16,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 public final class AchievementManager {
   private final AchievementDatabase database;
-  private final LuckPermsBadgeService badgeService;
   private final int maximumSelectedBadges;
-  private final Consumer<String> errorLogger;
   private final Runnable rewardsWakeup;
-  private final ConcurrentHashMap<UUID, Object> suffixLocks = new ConcurrentHashMap<>();
-  private final ConcurrentHashMap<UUID, CompletableFuture<Void>> suffixUpdates =
-    new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<UUID, Object> selectionLocks = new ConcurrentHashMap<>();
   private volatile AchievementCatalog catalog;
 
   public AchievementManager(
     AchievementDatabase database,
     AchievementCatalog catalog,
-    LuckPermsBadgeService badgeService,
     int maximumSelectedBadges,
-    Consumer<String> errorLogger,
     Runnable rewardsWakeup
   ) {
     this.database = database;
     this.catalog = catalog;
-    this.badgeService = badgeService;
     this.maximumSelectedBadges = maximumSelectedBadges;
-    this.errorLogger = errorLogger;
     this.rewardsWakeup = rewardsWakeup;
   }
 
@@ -51,9 +41,7 @@ public final class AchievementManager {
     ProgressRequest request = rawRequest.validated();
     AchievementCategory category = catalog.require(request.categoryId());
     ProgressResult result = database.applyProgress(request, category);
-    UUID playerUuid = UUID.fromString(request.playerUuid());
     if (!result.newlyUnlockedTiers().isEmpty()) {
-      refreshSuffix(playerUuid, request.playerName());
       rewardsWakeup.run();
     }
     return new ProgressResponse(
@@ -76,7 +64,6 @@ public final class AchievementManager {
     if (!validSelections.equals(state.selectedCategories())) {
       database.replaceSelections(playerUuid, validSelections);
       state = new PlayerState(playerUuid, playerName, state.progress(), validSelections);
-      refreshSuffix(playerUuid, playerName);
     }
     rewardsWakeup.run();
     return toSnapshot(state, currentCatalog, unlockStatistics);
@@ -86,7 +73,7 @@ public final class AchievementManager {
     UUID playerUuid,
     BadgeSelectionRequest rawRequest
   ) throws SQLException {
-    synchronized (suffixLocks.computeIfAbsent(playerUuid, ignored -> new Object())) {
+    synchronized (selectionLocks.computeIfAbsent(playerUuid, ignored -> new Object())) {
       return selectLocked(playerUuid, rawRequest);
     }
   }
@@ -113,20 +100,7 @@ public final class AchievementManager {
       request.categoryIds()
     );
     List<BadgeSnapshot> badges = badges(updated, catalog);
-    queueSuffix(playerUuid, badges);
     return new BadgeSelectionResponse(true, badges, null);
-  }
-
-  public void refreshSuffix(UUID playerUuid, String playerName) {
-    synchronized (suffixLocks.computeIfAbsent(playerUuid, ignored -> new Object())) {
-      try {
-        AchievementCatalog currentCatalog = catalog;
-        PlayerState state = database.loadPlayer(playerUuid, playerName, currentCatalog);
-        queueSuffix(playerUuid, badges(state, currentCatalog));
-      } catch (SQLException error) {
-        errorLogger.accept("Failed to refresh achievement suffix: " + error.getMessage());
-      }
-    }
   }
 
   public void reload(AchievementCatalog catalog) {
@@ -172,7 +146,6 @@ public final class AchievementManager {
     AchievementPlayer player = database.requirePlayer(target);
     AchievementCategory category = catalog.require(categoryId);
     ProgressResult result = database.revoke(player, category, tierLevel);
-    refreshSuffix(player.uuid(), player.name());
     return new AdminAchievementResult(
       player.uuid(),
       player.name(),
@@ -203,20 +176,6 @@ public final class AchievementManager {
       ));
     }
     return result;
-  }
-
-  private void queueSuffix(UUID playerUuid, List<BadgeSnapshot> badges) {
-    List<BadgeSnapshot> snapshot = List.copyOf(badges);
-    suffixUpdates.compute(playerUuid, (ignored, previous) -> {
-      CompletableFuture<Void> ready = previous == null
-        ? CompletableFuture.completedFuture(null)
-        : previous.handle((value, error) -> null);
-      return ready.thenCompose(value -> badgeService.apply(playerUuid, snapshot))
-        .exceptionally(error -> {
-          errorLogger.accept("Failed to update LuckPerms achievement suffix: " + rootMessage(error));
-          return null;
-        });
-    });
   }
 
   private List<String> validSelections(PlayerState state, AchievementCatalog currentCatalog) {
@@ -324,13 +283,5 @@ public final class AchievementManager {
       ));
     }
     return badges;
-  }
-
-  private static String rootMessage(Throwable error) {
-    Throwable current = error;
-    while (current.getCause() != null) {
-      current = current.getCause();
-    }
-    return current.getMessage() == null ? current.getClass().getSimpleName() : current.getMessage();
   }
 }

@@ -50,11 +50,17 @@ final class AchievementGuiController implements Listener {
   private static final int[] PROGRESS_SLOTS = {37, 38, 39, 40, 41, 42, 43};
   private final JavaPlugin plugin;
   private final AchievementApiClient client;
+  private final TabBadgeSynchronizer badgeSynchronizer;
   private volatile boolean enabled = true;
 
-  AchievementGuiController(JavaPlugin plugin, AchievementApiClient client) {
+  AchievementGuiController(
+    JavaPlugin plugin,
+    AchievementApiClient client,
+    TabBadgeSynchronizer badgeSynchronizer
+  ) {
     this.plugin = plugin;
     this.client = client;
+    this.badgeSynchronizer = badgeSynchronizer;
   }
 
   void open(Player player) {
@@ -399,6 +405,7 @@ final class AchievementGuiController implements Listener {
           failure.run();
           return;
         }
+        badgeSynchronizer.applySnapshot(player, snapshot);
         success.accept(snapshot);
       })
     );
