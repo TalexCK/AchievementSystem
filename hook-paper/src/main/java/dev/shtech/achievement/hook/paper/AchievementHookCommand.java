@@ -8,13 +8,14 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.CompletionException;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 final class AchievementHookCommand implements CommandExecutor, TabCompleter {
   private static final String USAGE =
@@ -35,23 +36,32 @@ final class AchievementHookCommand implements CommandExecutor, TabCompleter {
     String[] arguments
   ) {
     if (!sender.hasPermission("achievementhook.admin")) {
-      sender.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+      sender.sendMessage(Component.text(
+        "You do not have permission to use this command.",
+        NamedTextColor.RED
+      ));
       return true;
     }
     HookCommandRequest request;
     try {
       request = HookCommandRequest.parse(arguments);
     } catch (IllegalArgumentException error) {
-      sender.sendMessage(ChatColor.RED + error.getMessage());
-      sender.sendMessage(ChatColor.GRAY + USAGE);
+      sender.sendMessage(Component.text(error.getMessage(), NamedTextColor.RED));
+      sender.sendMessage(Component.text(USAGE, NamedTextColor.GRAY));
       return true;
     }
     PlayerTarget target = resolvePlayer(request.player());
     if (target == null) {
-      sender.sendMessage(ChatColor.RED + "Player is not online and has no cached profile.");
+      sender.sendMessage(Component.text(
+        "Player is not online and has no cached profile.",
+        NamedTextColor.RED
+      ));
       return true;
     }
-    sender.sendMessage(ChatColor.GRAY + "Submitting achievement progress...");
+    sender.sendMessage(Component.text(
+      "Submitting achievement progress...",
+      NamedTextColor.GRAY
+    ));
     request.submit(service, target.uuid(), target.name())
       .whenComplete((response, error) -> complete(sender, response, error));
     return true;
@@ -65,30 +75,34 @@ final class AchievementHookCommand implements CommandExecutor, TabCompleter {
       if (error != null) {
         Throwable cause = unwrap(error);
         String message = cause.getMessage();
-        sender.sendMessage(
-          ChatColor.RED + "Achievement request failed: "
-            + (message == null || message.isBlank() ? cause.getClass().getSimpleName() : message)
-        );
+        sender.sendMessage(Component.text(
+          "Achievement request failed: "
+            + (message == null || message.isBlank() ? cause.getClass().getSimpleName() : message),
+          NamedTextColor.RED
+        ));
         return;
       }
       if (!response.accepted()) {
         String message = response.error();
-        sender.sendMessage(
-          ChatColor.RED + (message == null || message.isBlank()
+        sender.sendMessage(Component.text(
+          message == null || message.isBlank()
             ? "Achievement request was rejected."
-            : message)
-        );
+            : message,
+          NamedTextColor.RED
+        ));
         return;
       }
       String duplicate = response.duplicate() ? " (duplicate event)" : "";
-      sender.sendMessage(
-        ChatColor.GREEN + "Achievement progress updated to " + response.progress()
-          + ", tier " + response.currentTier() + duplicate + "."
-      );
+      sender.sendMessage(Component.text(
+        "Achievement progress updated to " + response.progress()
+          + ", tier " + response.currentTier() + duplicate + ".",
+        NamedTextColor.GREEN
+      ));
       if (!response.newlyUnlockedTiers().isEmpty()) {
-        sender.sendMessage(
-          ChatColor.GOLD + "Unlocked tiers: " + response.newlyUnlockedTiers() + "."
-        );
+        sender.sendMessage(Component.text(
+          "Unlocked tiers: " + response.newlyUnlockedTiers() + ".",
+          NamedTextColor.GOLD
+        ));
       }
     });
   }

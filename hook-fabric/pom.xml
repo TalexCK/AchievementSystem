@@ -9,17 +9,18 @@
     <version>0.1.0-SNAPSHOT</version>
   </parent>
   <artifactId>achievement-hook-fabric</artifactId>
+  <version>0.1.0</version>
 
   <dependencies>
     <dependency>
       <groupId>dev.shtech</groupId>
       <artifactId>achievement-common</artifactId>
-      <version>${project.version}</version>
+      <version>${project.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>dev.shtech</groupId>
       <artifactId>achievement-hook-api</artifactId>
-      <version>${project.version}</version>
+      <version>${project.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>net.fabricmc</groupId>

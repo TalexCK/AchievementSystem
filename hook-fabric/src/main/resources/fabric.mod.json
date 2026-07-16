@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "achievement_hook",
-  "version": "0.1.0-SNAPSHOT",
+  "version": "0.1.0",
   "name": "Achievement Hook",
   "description": "Achievement progress hook for Fabric servers",
   "environment": "server",
